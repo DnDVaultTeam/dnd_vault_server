@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+    dndvault-db:
+      image: postgres:13
+      ports:
+        - 5434:5432
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: Ve[fyjdfYfbkz1
+        POSTGRES_DB: dndvault
+      networks:
+        - dndvault
+networks:
+    dndvault:
