@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,11 +7,184 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ENUMS
+enum Role {
+  ADMIN
+  USER
+  MODERATOR
+}
+
+enum SampleText {
+  SampleTitle
+}
+
+// main logic
 model User {
-  id Int @id @default(autoincrement())
-  name String
-  email String
-  hash String
+  id          Int    @id @default(autoincrement())
+
+  name        String // user name
+  nickname    String @unique  // user unique nickname
+  email       String @unique // email of user xd
+  hash        String // password hashed
+
+  role        Role   @default(USER) // users role
+
+  host        Host[] // host model array
+  master      Master[] // relation where player is DM
+  participant Participant[] // participant model array
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Campaign {
+  id          Int    @id @default(autoincrement())
+  
+  description String? // campaign description
+
+  title       SampleText  @default(SampleTitle) // base title
+
+  host        Host[] // host model array
+  master      Master[] // all of the DM's for campaign
+  participant Participant[] // participant model array
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("campaigns")
+}
+
+model Participant {
+  id            Int @id @default(autoincrement())
+
+  campaignId    Int?
+  campaign      Campaign? @relation(fields: [campaignId], references: [id]) // campaign reference
+
+  participantId Int?
+  participant   User? @relation(fields: [participantId], references: [id]) // user reference
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("participants")
+}
+
+model Host {
+  id         Int @id @default(autoincrement())
+
+  campaignId Int
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+
+  hostId     Int
+  host       User @relation(fields: [hostId], references: [id])
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("hosts")
+}
+
+model Master {
+  id         Int @id @default(autoincrement())
+
+  masterId   Int
+  master     User @relation(fields: [masterId], references: [id])
+
+  campaignId Int
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("masters")
+}
+
+model Character {
+  id        Int @id @default(autoincrement())
+
+  // decide on stuff to put there:D
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("characters")
+}
+
+/// RULES LOGIC #rules
+
+model Class {
+  id        Int @id @default(autoincrement())
+
+  // decide on stuff to put there:D
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("classes")  
+}
+
+model Subclass {
+  id        Int @id @default(autoincrement())
+
+  // decide on stuff to put there:D
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("subclasses")
+}
+
+model Rule {
+  id          Int @id @default(autoincrement())
+
+  title       String
+  description String
+
+  sourceId    Int 
+  source      Source @relation(fields: [sourceId], references: [id])
+  // decide on stuff to put there:D
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("rules")
+}
+
+model Source {
+  id          Int @id @default(autoincrement())
+
+  title       String
+  description String
+
+  rule        Rule[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("sources")
+}
+
+model Item {
+  id          Int @id @default(autoincrement())
+
+  title       String
+  description String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("items")
+}
+
+model Spell {
+  id        Int @id @default(autoincrement())
+
+  // decide on stuff to put there:D
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("spells")
 }
